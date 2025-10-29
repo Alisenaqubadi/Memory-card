@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "types": ["node", "vite/client", "jest"]
+  },
+  "include": ["src", "tests"]
+}
