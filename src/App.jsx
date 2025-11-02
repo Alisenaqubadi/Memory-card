@@ -10,12 +10,12 @@ import "./App.css";
 function Cards({ cards, onCardClick }) {
   return (
     <>
-      {cards.map((card, i) => (
+      {cards.map((card) => (
         <img
-          key={i}
+          key={card.id}
           src={card.image}
           alt={card.name}
-          className={card.id}
+          className={String(card.id)}
           onClick={() => onCardClick(card.id)}
         />
       ))}
@@ -63,12 +63,12 @@ function App() {
       for (let i = 0; i < 9 - clickedOnesLength; i++) {
         console.log(i, "running");
         let card = await getTheCard();
-        if (newCards.includes(card)) {
-          card = giveAnotherCard(card.id);
-          newCards.push(card);
-        } else {
-          newCards.push(card);
+        // Ensure we don't push a duplicate (by id). Use id-based check
+        // and await giveAnotherCard if we need a different one.
+        while (newCards.some((c) => c.id === card.id)) {
+          card = await giveAnotherCard(card.id);
         }
+        newCards.push(card);
       }
 
       setCards(shuffle(newCards));
@@ -80,8 +80,9 @@ function handleClick(id) {
     if (!clickedOnes.includes(id)) {
       setClickedOnes([...clickedOnes, id]);
     } else {
-      if(localStorage.getItem("Best") < clickedOnes.length) {
-        localStorage.setItem("Best", clickedOnes.length)
+      // Compare numerically
+      if (Number(localStorage.getItem("Best")) < clickedOnes.length) {
+        localStorage.setItem("Best", String(clickedOnes.length));
       }
       setClickedOnes([])
       setCards([])
