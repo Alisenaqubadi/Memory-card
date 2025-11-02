@@ -26,6 +26,11 @@ function Cards({ cards, onCardClick }) {
 function App() {
   const [cards, setCards] = useState([]);
   const [clickedOnes, setClickedOnes] = useState([]);
+  const [lost , setLost] = useState(0)
+
+  if(!localStorage.getItem("Best")){
+    localStorage.setItem("Best", '0')
+  }
 
   useEffect(() => {
     async function fetchCards() {
@@ -37,7 +42,7 @@ function App() {
       setCards(newCards);
     }
     fetchCards();
-  }, []);
+  }, [lost]);
 
   useEffect(() => {
     let clickedOnesLength;
@@ -71,12 +76,17 @@ function App() {
     fetchCards();
   }, [clickedOnes]);
 
-  function handleClick(id) {
+function handleClick(id) {
     if (!clickedOnes.includes(id)) {
       setClickedOnes([...clickedOnes, id]);
-      alert(`${id} was clicked and worked`);
     } else {
-      alert(`${id} was clicked and didn't work`);
+      if(localStorage.getItem("Best") < clickedOnes.length) {
+        localStorage.setItem("Best", clickedOnes.length)
+      }
+      setClickedOnes([])
+      setCards([])
+      setLost((prev)=> prev + 1)
+      alert(`You lose but try again next time`);
     }
   }
 
@@ -85,7 +95,7 @@ function App() {
       <div className="score">
         <div className="displayScore">
           <h2>Current Score: {clickedOnes.length}</h2>
-          <h2>Best Score: {0}</h2>
+          <h2>Best Score: {localStorage.getItem("Best")}</h2>
         </div>
       </div>
       <div className="cards">
